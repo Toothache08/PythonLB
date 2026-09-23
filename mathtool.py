@@ -16,7 +16,7 @@ if sys.argv[1] == 'solve' and len(sys.argv) == 2:
     a = input("Введите A: ")
     b = input("Введите B: ")
     c = input("Введите C: ")
-elif sys.argv != 'solve':
+elif sys.argv[1] != 'solve':
     print("Неизвестная команда", file=sys.stderr)
     sys.exit(1)
 elif sys.argv[1] == 'solve' and len(sys.argv) == 8:
