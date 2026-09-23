@@ -19,14 +19,14 @@ if sys.argv[1] == 'solve' and len(sys.argv) == 2:
 elif sys.argv != 'solve':
     print("Неизвестная команда", file=sys.stderr)
     sys.exit(1)
-elif sys.argv[1] == 'solve' and len(sys.argv) == 8:
+elif sys.argv[1] == 'solve' and len(sys.argv) == 7:
     if sys.argv[2]!='-a' and sys.argv[4]!='-b' and sys.argv[6]!='-c':
         print("Неизвестная команда", file=sys.stderr)
         sys.exit(1)
     a = sys.argv[3]
     b = sys.argv[5]
     c = sys.argv[7]
-if len(sys.argv)>8:
+if len(sys.argv)>7:
     print("Неверный набор параметров", file=sys.stderr)
     sys.exit(1)
 
