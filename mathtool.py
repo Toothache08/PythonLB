@@ -2,14 +2,14 @@ import sys
 
 mx = 7
 
-if len(sys.argv) == 1 or sys.argv[1] == '--help':
-    print('help — решение уравнений вида A*x^2 + B*x + C = 0')
+if len(sys.argv) == 1 or sys.argv[1] == '--mathtool':
+    print('mathtool — решение уравнений вида A*x^2 + B*x + C = 0')
     print(' ')
     print('Использование:')
-    print('    ','python help.py                         вывод справки')
-    print('    ','python help.py --help                  вывод справки')
-    print('    ','python help.py solve                   ввод коэффициентов с клавиатуры')
-    print('    ','python help.py solve -a 1 -b -3 -c 2   решение с заданными коэффициентами')
+    print('    ','python mathtool.py                         вывод справки')
+    print('    ','python mathtool.py --help                  вывод справки')
+    print('    ','python mathtool.py solve                   ввод коэффициентов с клавиатуры')
+    print('    ','python mathtool.py solve -a 1 -b -3 -c 2   решение с заданными коэффициентами')
     print(' ')
     print(f'Коэффициенты A, B, C — целые числа, по модулю не превышающие {mx}.')
     sys.exit(0)
