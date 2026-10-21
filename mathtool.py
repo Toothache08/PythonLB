@@ -1,77 +1,147 @@
 import sys
 
-mx = 7
-
-if len(sys.argv) == 1 or sys.argv[1] == '--mathtool':
-    print('mathtool — решение уравнений вида A*x^2 + B*x + C = 0')
-    print(' ')
-    print('Использование:')
-    print('    ','python mathtool.py                         вывод справки')
-    print('    ','python mathtool.py --help                  вывод справки')
-    print('    ','python mathtool.py solve                   ввод коэффициентов с клавиатуры')
-    print('    ','python mathtool.py solve -a 1 -b -3 -c 2   решение с заданными коэффициентами')
-    print(' ')
-    print(f'Коэффициенты A, B, C — целые числа, по модулю не превышающие {mx}.')
-    sys.exit(0)
+from cli import create_parser
+from calc.equation import solve
+from calc.stats import calculate_stats
+from calc.series import calculate_series, FORMULAS
+from calc.integrate import integrate
 
 
+def handle_solve(args):
+    """Получает коэффициенты и выводит решение уравнения."""
+    values = (args.a, args.b, args.c)
 
-def test(n):
-    try:
-        n = int(n)
-        return test2(n)
-    except ValueError:
-        print("ОШИБКА: Коэффициент не является целым числом", file=sys.stderr)
-        sys.exit(1)
-
-def test2(f):
-    if abs(f)>mx:
-        print("ОШИБКА: Значение вне допустимого диапазона", file=sys.stderr)
-        sys.exit(1)
-    return (int(f))
-
-
-
-if sys.argv[1] == 'solve' and len(sys.argv) == 2:
-    a = test(input("Введите A: "))
-    b = test(input("Введите B: "))
-    c = test(input("Введите C: "))
-elif sys.argv[1] != 'solve':
-    print("Неизвестная команда", file=sys.stderr)
-    sys.exit(1)
-elif sys.argv[1] == 'solve' and len(sys.argv) == 8:
-    if sys.argv[2]!='-a' or sys.argv[4]!='-b' or sys.argv[6]!='-c':
-        print("Неизвестная команда", file=sys.stderr)
-        sys.exit(1)
+    if all(value is None for value in values):
+        try:
+            a = input("Введите A: ")
+            b = input("Введите B: ")
+            c = input("Введите C: ")
+        except EOFError:
+            raise ValueError("Не удалось прочитать коэффициенты")
+    elif any(value is None for value in values):
+        raise ValueError("Нужно указать все три коэффициента: -a, -b, -c")
     else:
-        a = test(sys.argv[3])
-        b = test(sys.argv[5])
-        c = test(sys.argv[7])
-else:
-    print("Неверный набор параметров", file=sys.stderr)
-    sys.exit(1)
+        a, b, c = values
 
+    try:
+        a, b, c = int(a), int(b), int(c)
+    except ValueError:
+        raise ValueError("Коэффициент не является целым числом")
 
+    kind, d, roots = solve(a, b, c)
 
-from math import *
+    if kind == "линейное":
+        print("Уравнение линейное")
+        print(f"x = {roots[0]:.3f}")
+        return 0
 
-if a == 0 and b == 0:
-    print("ОШИБКА: Введенные коэффициенты не образуют уравнение", file=sys.stderr)
-    sys.exit(1)
-elif a == 0 and b!=0:
-    print("Уравнение линейное")
-    x = -c/b
-    print(f"x = {x:.3f}")
-else:
     print("Уравнение квадратное")
-    D = b**2 - 4*a*c
-    print("Дискриминант:",D)
-    if D>0:
-        x1 = (-b + sqrt(D))/(2*a)
-        x2 = (-b - sqrt(D))/(2*a)
-        print(f"x1 = {x1:.3f}",f"x2 = {x2:.3f}")
-    elif D==0:
-        x = -b/(2*a)
-        print(f"x = {x:.3f}")
+    print("Дискриминант:", d)
+
+    if len(roots) == 2:
+        print(f"x1 = {roots[0]:.3f}", f"x2 = {roots[1]:.3f}")
+    elif len(roots) == 1:
+        print(f"x = {roots[0]:.3f}")
     else:
         print("Действительных корней нет")
+
+    return 0
+
+def handle_stats(args):
+    """Читает числовой ряд и выводит статистические характеристики."""
+    try:
+        if args.input:
+            with open(args.input, "r", encoding="utf-8") as file:
+                content = file.read()
+        else:
+            content = sys.stdin.read()
+
+        numbers = [float(value) for value in content.split()]
+
+    except OSError as error:
+        raise ValueError(f"Не удалось прочитать файл: {error}") from error
+    except ValueError as error:
+        raise ValueError(
+            "Входные данные должны содержать только числа"
+        ) from error
+
+    result = calculate_stats(numbers)
+
+    print("Количество:", result["count"])
+    print(f'Сумма: {result["sum"]:.3f}')
+    print(f'Ср. арифм.: {result["mean"]:.3f}')
+    print(f'Сумма кв.: {result["sum_squares"]:.3f}')
+    print(f'Ср. кв.: {result["rms"]:.3f}')
+    print(f'Дисперсия: {result["variance"]:.3f}')
+    print(f'СКО: {result["std_dev"]:.3f}')
+
+    if result["sample_std_dev"] is None:
+        print("Станд. откл.: не определено")
+    else:
+        print(f'Станд. откл.: {result["sample_std_dev"]:.3f}')
+
+    print(f'Наименьшее: {result["min"]:.3f}')
+    print(f'Наибольшее: {result["max"]:.3f}')
+    print("Положительных:", result["positive_count"])
+    print("Отрицательных:", result["negative_count"])
+
+    return 0
+
+def handle_series(args):
+    """Вычисляет сумму числового ряда и выводит результат."""
+    term_function, formula = FORMULAS[args.func]
+
+    total, count = calculate_series(
+        term_function,
+        terms=args.terms,
+        eps=args.eps,
+    )
+
+    print("Функция:", args.func)
+    print("Формула:", formula)
+    print("Количество слагаемых:", count)
+    print(f"Сумма: {total:.4f}")
+
+    return 0
+
+def handle_integrate(args):
+    """Вычисляет интеграл и выводит результат."""
+    formula, result = integrate(
+        args.func,
+        args.start,
+        args.end,
+        args.steps,
+    )
+
+    print("Функция:", args.func)
+    print("Формула:", formula)
+    print(f"Интеграл: {result:.6f}")
+
+    return 0
+
+
+def main():
+    parser = create_parser()
+    args = parser.parse_args()
+
+    if args.command is None:
+        parser.print_help()
+        return 0
+
+    try:
+        if args.command == "solve":
+            return handle_solve(args)
+        if args.command == "stats":
+            return handle_stats(args)
+        if args.command == "series":
+            return handle_series(args)
+        if args.command == "integrate":
+            return handle_integrate(args)
+        raise ValueError(f"Команда {args.command} пока не реализована")
+    except ValueError as error:
+        print(f"ОШИБКА: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
