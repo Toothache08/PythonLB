@@ -53,8 +53,11 @@ def create_parser():
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         allow_abbrev=False,
+        
     )
-
+    solve_parser.add_argument("-a", help="коэффициент A")
+    solve_parser.add_argument("-b", help="коэффициент B")
+    solve_parser.add_argument("-c", help="коэффициент C")
     # Статистика
     stats_parser = commands.add_parser(
         "stats",
@@ -83,6 +86,10 @@ def create_parser():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         allow_abbrev=False,
     )
+    stats_parser.add_argument(
+        "--input",
+        help="путь к файлу с числами"
+    )
     # Сумма ряда
     series_parser = commands.add_parser(
         "series",
@@ -108,6 +115,28 @@ def create_parser():
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         allow_abbrev=False,
+    )
+    series_parser.add_argument(
+        "--func",
+        choices=sorted(FORMULAS),
+        required=True,
+        help="название числового ряда"
+    )
+
+    series_group = series_parser.add_mutually_exclusive_group(
+        required=True
+    )
+
+    series_group.add_argument(
+        "--terms",
+        type=int,
+        help="количество слагаемых"
+    )
+
+    series_group.add_argument(
+        "--eps",
+        type=float,
+        help="точность вычисления"
     )
     # Численное интегрирование
     integrate_parser = commands.add_parser(
@@ -135,5 +164,35 @@ def create_parser():
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         allow_abbrev=False,
+    )
+    
+    integrate_parser.add_argument(
+        "--func",
+        choices=["ratio", "root"],
+        required=True,
+        help="название интегрируемой функции"
+    )
+
+    integrate_parser.add_argument(
+        "--from",
+        dest="start",
+        type=float,
+        required=True,
+        help="начало промежутка интегрирования"
+    )
+
+    integrate_parser.add_argument(
+        "--to",
+        dest="end",
+        type=float,
+        required=True,
+        help="конец промежутка интегрирования"
+    )
+
+    integrate_parser.add_argument(
+        "--steps",
+        type=int,
+        required=True,
+        help="количество шагов интегрирования"
     )
     return parser
