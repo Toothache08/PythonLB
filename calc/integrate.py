@@ -2,12 +2,10 @@ from math import sqrt, isfinite
 
 
 def ratio(x):
-    """Возвращает значение функции x / (x + 1)."""
     return x / (x + 1)
 
 
 def root(x):
-    """Возвращает значение функции sqrt(x^2 + 1)."""
     return sqrt(x * x + 1)
 
 

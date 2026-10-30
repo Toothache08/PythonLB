@@ -8,7 +8,6 @@ from calc.integrate import integrate
 
 
 def handle_solve(args):
-    """Получает коэффициенты и выводит решение уравнения."""
     values = (args.a, args.b, args.c)
 
     if all(value is None for value in values):
@@ -48,7 +47,6 @@ def handle_solve(args):
     return 0
 
 def handle_stats(args):
-    """Читает числовой ряд и выводит статистические характеристики."""
     try:
         if args.input:
             with open(args.input, "r", encoding="utf-8") as file:
@@ -88,7 +86,6 @@ def handle_stats(args):
     return 0
 
 def handle_series(args):
-    """Вычисляет сумму числового ряда и выводит результат."""
     term_function, formula = FORMULAS[args.func]
 
     total, count = calculate_series(
@@ -105,7 +102,6 @@ def handle_series(args):
     return 0
 
 def handle_integrate(args):
-    """Вычисляет интеграл и выводит результат."""
     formula, result = integrate(
         args.func,
         args.start,
@@ -137,7 +133,6 @@ def main():
             return handle_series(args)
         if args.command == "integrate":
             return handle_integrate(args)
-        raise ValueError(f"Команда {args.command} пока не реализована")
     except ValueError as error:
         print(f"ОШИБКА: {error}", file=sys.stderr)
         return 1

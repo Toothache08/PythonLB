@@ -9,7 +9,7 @@ def solve(a, b, c):
         if not isinstance(value, int):
             raise ValueError("Коэффициент должен быть целым числом")
         if abs(value) > mx:
-            raise ValueError("Значение вне допустимого диапазона")
+            raise ValueError(f"Значение вне допустимого диапазона [{mx*-1};{mx}]")
 
     if a == 0 and b == 0:
         raise ValueError("Введенные коэффициенты не образуют уравнение")

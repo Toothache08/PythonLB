@@ -16,4 +16,4 @@ python mathtool.py series --func sqplus --terms 10001
 python mathtool.py series --func sqplus --eps 0.001
 python mathtool.py series --func sqplus --terms 6 --eps 0.0001
 python mathtool.py integrate --func ratio --from 4 --to 1 --steps 100
-python mathtool.py integrate --func root --from -5 --to 5 --steps 100
+python mathtool.py integrate --func root --from -4.9 --to 4.9 --steps 100001
