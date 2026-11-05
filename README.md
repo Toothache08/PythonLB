@@ -23,7 +23,7 @@ python mathtool.py integrate --func ratio --from 0 --to 20 --steps 1000
 - `calc/equation.py` — решение уравнений.
 - `calc/stats.py` — чтение чисел и статистические показатели.
 - `calc/series.py` — суммы рядов.
-- `calc/integration.py` — численное интегрирование.
+- `calc/integrate.py` — численное интегрирование.
 - `numbers.txt` — пример входных данных.
 - `tests.txt` — примеры проверок.
 

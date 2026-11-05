@@ -1,4 +1,5 @@
 import sys
+import math
 
 from cli import create_parser
 from calc.equation import solve
@@ -46,22 +47,77 @@ def handle_solve(args):
 
     return 0
 
+
 def handle_stats(args):
     try:
         if args.input:
-            with open(args.input, "r", encoding="utf-8") as file:
-                content = file.read()
-        else:
-            content = sys.stdin.read()
+            with open(args.input, "r", encoding="utf-8-sig") as file:
+                source = file
+                numbers = []
 
-        numbers = [float(value) for value in content.split()]
+                for line in source:
+                    for word in line.split():
+                        try:
+                            value = float(word)
+                        except ValueError:
+                            raise ValueError(
+                                f"{word} не является числом"
+                            )
+
+                        if not math.isfinite(value):
+                            raise ValueError(
+                                f"{word} не является конечным числом"
+                            )
+
+                        if abs(value) > 10000:
+                            raise ValueError(
+                                f"Значение {word} вне допустимого диапазона "
+                                "[-10000; 10000]"
+                            )
+
+                        numbers.append(value)
+
+                        if len(numbers) > 20:
+                            raise ValueError(
+                                "Количество чисел не должно превышать 20"
+                            )
+        else:
+            numbers = []
+
+            for line in sys.stdin:
+                for word in line.split():
+                    try:
+                        value = float(word)
+                    except ValueError:
+                        raise ValueError(
+                            f"{word} не является числом"
+                        )
+
+                    if not math.isfinite(value):
+                        raise ValueError(
+                            f"{word} не является конечным числом"
+                        )
+
+                    if abs(value) > 10000:
+                        raise ValueError(
+                            f"Значение {word} вне допустимого диапазона "
+                            "[-10000; 10000]"
+                        )
+
+                    numbers.append(value)
+
+                    if len(numbers) > 20:
+                        raise ValueError(
+                            "Количество чисел не должно превышать 20"
+                        )
 
     except OSError as error:
-        raise ValueError(f"Не удалось прочитать файл: {error}") from error
-    except ValueError as error:
         raise ValueError(
-            "Входные данные должны содержать только числа"
+            f"Не удалось прочитать файл: {error}"
         ) from error
+
+    if not numbers:
+        raise ValueError("Числовой ряд пуст")
 
     result = calculate_stats(numbers)
 
