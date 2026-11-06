@@ -83,33 +83,39 @@ def handle_stats(args):
                             )
         else:
             numbers = []
+            while True:
+                a = input()
+                if a=="":
+                    break
+                for w in a.split():
+                    numbers.append(float(w))
 
-            for line in sys.stdin:
-                for word in line.split():
-                    try:
-                        value = float(word)
-                    except ValueError:
-                        raise ValueError(
-                            f"{word} не является числом"
-                        )
+            # for line in sys.stdin:
+            #     for word in line.split():
+            #         try:
+            #             value = float(word)
+            #         except ValueError:
+            #             raise ValueError(
+            #                 f"{word} не является числом"
+            #             )
 
-                    if not math.isfinite(value):
-                        raise ValueError(
-                            f"{word} не является конечным числом"
-                        )
+            #         if not math.isfinite(value):
+            #             raise ValueError(
+            #                 f"{word} не является конечным числом"
+            #             )
 
-                    if abs(value) > 10000:
-                        raise ValueError(
-                            f"Значение {word} вне допустимого диапазона "
-                            "[-10000; 10000]"
-                        )
+            #         if abs(value) > 10000:
+            #             raise ValueError(
+            #                 f"Значение {word} вне допустимого диапазона "
+            #                 "[-10000; 10000]"
+            #             )
 
-                    numbers.append(value)
+            #         numbers.append(value)
 
-                    if len(numbers) > 20:
-                        raise ValueError(
-                            "Количество чисел не должно превышать 20"
-                        )
+            #         if len(numbers) > 20:
+            #             raise ValueError(
+            #                 "Количество чисел не должно превышать 20"
+            #             )
 
     except OSError as error:
         raise ValueError(
